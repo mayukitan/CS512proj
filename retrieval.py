@@ -26,7 +26,9 @@ def main(project_id):
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
-                    repository_language;""")
+                    repository_language
+                  ORDER BY repo_count DESC;"""
+                    )
         }
         query_request2 = bigquery_service.jobs()
         query_data2 = {
@@ -43,7 +45,8 @@ def main(project_id):
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
-                    repository_language;""")
+                    repository_language
+                  ORDER BY repo_count DESC;""")
         }
 
         query_response = query_request.query(
