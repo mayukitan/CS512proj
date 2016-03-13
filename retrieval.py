@@ -1,3 +1,4 @@
+
 import argparse
 
 from apiclient.discovery import build
@@ -15,25 +16,14 @@ def main(project_id):
         query_request = bigquery_service.jobs()
         query_data = {
             'query': (
-                  'select '
-                    'repository_name,'
-                    'repository_owner,'
-                    'type,'
-                    'YEAR(created_at) as year,'
-                    'QUARTER(created_at) as quarter'
-                  'from [githubarchive:github.timeline],'
-                  'where'
-                      'type = 'PushEvent'/'
-                      'AND repository_url != '''
-                      'AND YEAR(created_at)= 2014'
-                      'AND (QUARTER(created_at)=1)'
-                  'group by '
-                    'repository_name,'
-                    'repository_owner,'
-                    'type,'
-                    'year,'
-                    'quarter'
-                    )
+                  """SELECT repository_name,
+                    repository_owner,
+                    type
+                  FROM [gitcopy.2014_1]
+                  WHERE type CONTAINS "PushEvent"
+                  GROUP BY repository_name,
+                    repository_owner,
+                    type;""")
         }
 
         query_response = query_request.query(
@@ -54,8 +44,20 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('project_id', help='Your Google Cloud Project ID.')
+    parser.add_argument('project_id')
 
     args = parser.parse_args()
 
     main(args.project_id)
+
+
+
+
+
+
+
+
+
+
+
+
