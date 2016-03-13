@@ -26,7 +26,7 @@ def main(project_id):
                       'type = 'PushEvent'/'
                       'AND repository_url != '''
                       'AND YEAR(created_at)= 2014'
-                      'AND (QUARTER(created_at)=1 OR QUARTER(created_at)=2)'
+                      'AND (QUARTER(created_at)=1)'
                   'group by '
                     'repository_name,'
                     'repository_owner,'
