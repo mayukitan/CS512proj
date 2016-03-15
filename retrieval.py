@@ -26,8 +26,7 @@ def main(project_id):
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
-                    repository_language
-                  ORDER BY repo_count DESC;"""
+                    repository_language;"""
                     )
         }
         query_request2 = bigquery_service.jobs()
@@ -45,8 +44,8 @@ def main(project_id):
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
-                    repository_language
-                  ORDER BY repo_count DESC;""")
+                    repository_language;"""
+                )
         }
 
         query_response = query_request.query(
