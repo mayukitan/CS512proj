@@ -23,6 +23,7 @@ def main(project_id):
                   FROM [gitcopy.2013]
                   WHERE type CONTAINS 'PullRequestEvent'
                         AND repository_language != " "
+                        AND actor != " "
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
@@ -41,6 +42,7 @@ def main(project_id):
                         [gitcopy.2014_3]
                   WHERE type CONTAINS 'PullRequestEvent'
                         AND repository_language != " "
+                        AND actor != " "
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
@@ -49,12 +51,11 @@ def main(project_id):
             
         }
 
-
         query_response = query_request.query(
             projectId=project_id,
             body=query_data).execute()
 
-        with open('training.txt', 'w') as f:
+        with open('training_all.txt', 'w') as f:
             f.write("Training Data (Year 2013)\n")
             s = "repo_name \t repo_owner \t actor \t language\n"
             f.write(s)
@@ -65,7 +66,7 @@ def main(project_id):
             projectId=project_id,
             body=query_data2).execute()
 
-        with open('ground_truth.txt', 'w') as f:
+        with open('ground_truth_all.txt', 'w') as f:
             f.write("Ground Truth\n")
             s = "repo_name \t repo_owner \t actor \t language\n"
             f.write(s)
