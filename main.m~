@@ -1,0 +1,10 @@
+clc;
+clear;
+%%
+data = tdfread('ground_truth_all.txt');
+%%
+actor = data.actor;
+repo_name = data.repo_name;
+repo_owner = data.repo_owner;
+language = data.language;
+data = [actor repo_name repo_owner language];

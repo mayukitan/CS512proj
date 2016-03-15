@@ -1,4 +1,3 @@
-Ground Truth
 repo_name 	 repo_owner 	 actor 	 language
 popit-django	mysociety	lfalvarez	Python
 ftw.simplelayout	4teamwork	maethu	Python

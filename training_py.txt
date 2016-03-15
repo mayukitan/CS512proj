@@ -1,4 +1,3 @@
-Training Data (Year 2013)
 repo_name 	 repo_owner 	 actor 	 language
 WMCore	dmwm	zdenekmaxa	Python
 rosleapmotion	warp1337	DaikiMaekawa	Python

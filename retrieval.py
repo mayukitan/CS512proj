@@ -21,8 +21,8 @@ def main(project_id):
                     actor,
                     repository_language
                   FROM [gitcopy.2013]
-                  WHERE repository_language CONTAINS 'Python'
-                        AND type CONTAINS 'PullRequestEvent'
+                  WHERE type CONTAINS 'PullRequestEvent'
+                        AND repository_language != " "
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
@@ -39,14 +39,16 @@ def main(project_id):
                   FROM [gitcopy.2014_1],
                         [gitcopy.2014_2],
                         [gitcopy.2014_3]
-                  WHERE repository_language CONTAINS 'Python'
-                        AND type CONTAINS 'PullRequestEvent'
+                  WHERE type CONTAINS 'PullRequestEvent'
+                        AND repository_language != " "
                   GROUP BY repository_name,
                     repository_owner,
                     actor,
                     repository_language;"""
                 )
+            
         }
+
 
         query_response = query_request.query(
             projectId=project_id,
