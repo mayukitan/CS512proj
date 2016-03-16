@@ -36,7 +36,10 @@ writetable(train_author_top,'train_top_author.txt','Delimiter','\t');
 % Pick top 50 authors to test
 k = 50;
 test_author_tab = returntopk(k, 3, truth_cell, 'Author');
-%writetable(test_author_tab ,'test_top_authors.txt','Delimiter','\t');
+[index, ~] = cellfun(@(x) ismember(x,test_author_tab.Author), truth_cell(:,3), 'UniformOutput', 0);
+test_cell_top = truth_cell(cell2mat(index),:);
+test_author_top = cell2table(test_cell_top,'VariableNames',{'repo_name' 'repo_owner' 'actor' 'language'});
+writetable(test_author_top,'test_top_author.txt','Delimiter','\t');
 
 %% Check if all authors in test appear in train
 %% If do not exist, remove from test data
