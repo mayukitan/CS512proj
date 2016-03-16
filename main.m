@@ -27,5 +27,7 @@ author_sort = sortrows(train_cell,3);
 n = accumarray(idx(:),1);
 author_unq = [uv num2cell(n)];
 author_unq_sort = sortrows(author_unq,-2);
-author_tab = cell2table(author_unq_sort,'VariableNames',{'Author','Count'});
+% Pick top 10,000 authors
+k = 10000;
+author_tab = cell2table(author_unq_sort(1:k,:),'VariableNames',{'Author','Count'});
 writetable(author_tab,'train_top_authors.txt','Delimiter','\t');
