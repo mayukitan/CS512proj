@@ -12,22 +12,13 @@ def main(project_id):
     # Construct the service object for interacting with the BigQuery API.
     bigquery_service = build('bigquery', 'v2', credentials=credentials)
 
-""" Pick only top 10 languages
+""" 
+    Pick only top 10 languages
     SELECT TOP(repository_language, 10), COUNT(*)
     FROM [gitcopy.2013]
     WHERE repository_language != " "
 """
-""" Pick only top 10 actors
-SELECT TOP(actor, 10), COUNT(*)
-FROM [gitcopy.2013]
-WHERE type CONTAINS 'PullRequestEvent'
-  AND (repository_language CONTAINS "JavaScript"
-  OR repository_language CONTAINS "Ruby"
-  OR repository_language CONTAINS "Python"
-  OR repository_language CONTAINS "Java"
-  OR repository_language CONTAINS "PHP")
-  AND actor != " "
-"""
+
     try:
         query_request = bigquery_service.jobs()
         query_data = {
