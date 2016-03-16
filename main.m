@@ -27,9 +27,12 @@ load('data.mat');
 k = 10000;
 train_author_tab = returntopk(k, 3, train_cell, 'Author');
 train_repo_tab = returntopk(k, 1, train_cell, 'Repository');
-%writetable(train_author_tab,'train_top_authors.txt','Delimiter','\t');
-%writetable(train_repo_tab,'train_top_repo.txt','Delimiter','\t');
 
+[index, ~] = cellfun(@(x) ismember(x,train_author_tab.Author), train_cell(:,3), 'UniformOutput', 0);
+train_cell_top = train_cell(cell2mat(index),:);
+train_author_top = cell2table(train_cell_top,'VariableNames',{'repo_name' 'repo_owner' 'actor' 'language'});
+writetable(train_author_top,'train_top_author.txt','Delimiter','\t');
+%%
 % Pick top 50 authors to test
 k = 50;
 test_author_tab = returntopk(k, 3, truth_cell, 'Author');
@@ -37,9 +40,8 @@ test_author_tab = returntopk(k, 3, truth_cell, 'Author');
 
 %% Check if all authors in test appear in train
 %% If do not exist, remove from test data
-clc;
 flag_exist = zeros(size(test_author_tab,1),1);
-flag_exist = cellfun(@(x) ismember(x,train_author_tab.Author(:,1)), test_author_tab.Author(:,1),...
+flag_exist = cellfun(@(x) ismember(x,train_author_tab.Author), test_author_tab.Author(:,1),...
                  'UniformOutput', 0);
 
 
