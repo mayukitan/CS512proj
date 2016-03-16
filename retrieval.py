@@ -12,9 +12,26 @@ def main(project_id):
     # Construct the service object for interacting with the BigQuery API.
     bigquery_service = build('bigquery', 'v2', credentials=credentials)
 
+""" Pick only top 10 languages
+    SELECT TOP(repository_language, 10), COUNT(*)
+    FROM [gitcopy.2013]
+    WHERE repository_language != " "
+"""
+""" Pick only top 10 actors
+SELECT TOP(actor, 10), COUNT(*)
+FROM [gitcopy.2013]
+WHERE type CONTAINS 'PullRequestEvent'
+  AND (repository_language CONTAINS "JavaScript"
+  OR repository_language CONTAINS "Ruby"
+  OR repository_language CONTAINS "Python"
+  OR repository_language CONTAINS "Java"
+  OR repository_language CONTAINS "PHP")
+  AND actor != " "
+"""
     try:
         query_request = bigquery_service.jobs()
         query_data = {
+            "allowLargeResults": True,
             'query': (
                   """SELECT repository_name,
                     repository_owner,
@@ -22,7 +39,11 @@ def main(project_id):
                     repository_language
                   FROM [gitcopy.2013]
                   WHERE type CONTAINS 'PullRequestEvent'
-                        AND repository_language != " "
+                        AND (repository_language CONTAINS "JavaScript"
+                        OR repository_language CONTAINS "Ruby"
+                        OR repository_language CONTAINS "Python"
+                        OR repository_language CONTAINS "Java"
+                        OR repository_language CONTAINS "PHP")
                         AND actor != " "
                   GROUP BY repository_name,
                     repository_owner,
@@ -32,15 +53,20 @@ def main(project_id):
         }
         query_request2 = bigquery_service.jobs()
         query_data2 = {
+            "allowLargeResults": True,
             'query': (
                   """SELECT repository_name,
                     repository_owner,
                     actor,
                     repository_language
-                  FROM [gitcopy.2014_1],
-                        [gitcopy.2014_2],
+                  FROM [gitcopy.2014_2],
                         [gitcopy.2014_3]
-                  WHERE type CONTAINS 'PullRequestEvent'
+                  WHERE type CONTAINS 'PullRequestEvent' 
+                        AND (repository_language CONTAINS "JavaScript"
+                        OR repository_language CONTAINS "Ruby"
+                        OR repository_language CONTAINS "Python"
+                        OR repository_language CONTAINS "Java"
+                        OR repository_language CONTAINS "PHP")
                         AND repository_language != " "
                         AND actor != " "
                   GROUP BY repository_name,
