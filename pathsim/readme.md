@@ -1,3 +1,6 @@
+# Setup
+1. Install Python 3, Pandas, numpy
+
 # Usage
 1. Set data path in constants.py
 2. Run `python list_all_x.py`
