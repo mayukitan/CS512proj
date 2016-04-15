@@ -1,24 +1,34 @@
 import csv
 import numpy
 import pandas
+import argparse
 
 import constants
 
 
-def read_data(filename):
+def read_data(datapath):
     return pandas.read_csv(
-        constants.datapath + filename + '.txt',
-        sep='\t', index_col=False)
+        datapath, sep='\t', index_col=False)
 
 
-def save_x(type_x, data):
+def save_x(type_x, data, savedir):
     dropped = data.drop_duplicates(type_x)
     x = dropped[type_x]
-    x.to_csv(constants.datapath + type_x + '.csv', index=False)
+    x.to_csv(savedir + '/' + type_x + '.csv', index=False)
 
-data = read_data('top_actor')
+
+parser = argparse.ArgumentParser()
+parser.add_argument("datafile")
+parser.add_argument("savedir")
+args = parser.parse_args()
+
+print(args.datafile)
+print(args.savedir)
+
+data = read_data(args.datafile)
 # print('data:', data)
 
-save_x(constants.LANG, data)
-save_x(constants.ACTOR, data)
-save_x(constants.REPO, data)
+
+save_x(constants.LANG, data, args.savedir)
+save_x(constants.ACTOR, data, args.savedir)
+save_x(constants.REPO, data, args.savedir)

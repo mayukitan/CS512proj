@@ -2,19 +2,18 @@ import csv
 import numpy
 import pandas
 import time
-
+import argparse
 import constants
 
 
-def read_data(filename):
+def read_data(datafile):
     return pandas.read_csv(
-        constants.datapath + filename + '.txt',
-        sep='\t', index_col=False)
+        datafile, sep='\t', index_col=False)
 
 
-def read_x(filename):
+def read_x(filename, savedir):
     return pandas.read_csv(
-        constants.datapath + filename + '.csv',
+        savedir + '/' + filename + '.csv',
         sep='\t', index_col=0, header=None)
 
 
@@ -25,8 +24,8 @@ def create_matrixRX(repo, x):
     return matrixRX
 
 
-def set_relation(matrixRX, type_x):
-    data = read_data('top_actor')
+def set_relation(matrixRX, type_x, datafile):
+    data = read_data(datafile)
 
     for index, row in data.iterrows():
         cur_repo = row[constants.REPO]
@@ -38,35 +37,35 @@ def set_relation(matrixRX, type_x):
             matrixRX.loc[cur_repo][cur_x] += 1
 
 
-def create_matrices(actor, lang, repo):
+def create_matrices(actor, lang, repo, datafile):
     matrixRA = create_matrixRX(repo, actor)
     matrixRL = create_matrixRX(repo, lang)
 
-    set_relation(matrixRA, constants.ACTOR)
-    set_relation(matrixRL, constants.LANG)
+    set_relation(matrixRA, constants.ACTOR, datafile)
+    set_relation(matrixRL, constants.LANG, datafile)
     return matrixRA, matrixRL
 
 
-def create_matrixARA(matrixRA):
+def create_matrixARA(matrixRA, savedir):
     try:
         # load matrix from csv
         matrixARA = pandas.DataFrame.from_csv(
-            constants.datapath + 'matrixARA.csv')
+            savedir + '/' + 'matrixARA.csv')
     except IOError:
         matrixAR = matrixRA.transpose()
         matrixARA = matrixAR.dot(matrixRA)
 
         # save matrix to csv
-        matrixARA.to_csv(constants.datapath + 'matrixARA.csv')
+        matrixARA.to_csv(savedir + '/' + 'matrixARA.csv')
 
     return matrixARA
 
 
-def create_matrixARLRA(matrixRL, matrixRA):
+def create_matrixARLRA(matrixRL, matrixRA, savedir):
     try:
         # load matrix from csv
         matrixARLRA = pandas.DataFrame.from_csv(
-            constants.datapath + 'matrixARLRA.csv')
+            savedir + '/' + 'matrixARLRA.csv')
     except IOError:
         matrixAR = matrixRA.transpose()
         matrixARL = matrixAR.dot(matrixRL)
@@ -74,7 +73,7 @@ def create_matrixARLRA(matrixRL, matrixRA):
         matrixARLRA = matrixARL.dot(matrixLRA)
 
         # save matrix to csv
-        matrixARLRA.to_csv(constants.datapath + 'matrixARLRA.csv')
+        matrixARLRA.to_csv(savedir + '/' + 'matrixARLRA.csv')
     return matrixARLRA
 
 
@@ -91,21 +90,29 @@ def top_k_similar(actor_name, k, matrix):
     return similar[0:k]
 
 
-lang = read_x(constants.LANG)
-actor = read_x(constants.ACTOR)
-repo = read_x(constants.REPO)
+parser = argparse.ArgumentParser()
+parser.add_argument("datafile")
+parser.add_argument("savedir")
+args = parser.parse_args()
 
-matrixRA, matrixRL = create_matrices(actor, lang, repo)
+print(args.datafile)
+print(args.savedir)
+
+lang = read_x(constants.LANG, args.savedir)
+actor = read_x(constants.ACTOR, args.savedir)
+repo = read_x(constants.REPO, args.savedir)
+
+matrixRA, matrixRL = create_matrices(actor, lang, repo, args.datafile)
 # print('matrixRA:', matrixRA)
 # print('matrixRL:', matrixRL)
 
-matrixARA = create_matrixARA(matrixRA)
+matrixARA = create_matrixARA(matrixRA, args.savedir)
 
 print('\nThe top similar actors to pombredanne using ARA are:\n')
 result = top_k_similar('pombredanne', 10, matrixARA)
 print('result:', result)
 
-matrixARLRA = create_matrixARLRA(matrixRL, matrixRA)
+matrixARLRA = create_matrixARLRA(matrixRL, matrixRA, args.savedir)
 
 print('\nThe top similar actors to pombredanne using ARLRA are:\n')
 result = top_k_similar('pombredanne', 10, matrixARLRA)
