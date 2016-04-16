@@ -2,8 +2,8 @@ The format of test result csv file is as follows:
 
 ```
 TestSubjectA,1stSimilarToA,2ndSimilarToA,3rdSimilarToA,...,lastSimilarToA
-TestSubjectB,1stSimilarToB,2ndSimilarToB,3rdSimilarToB,..., lastSimilarToB
-TestSubjectC,1stSimilarToC,2ndSimilarToC,3rdSimilarToC,..., lastSimilarToC
+TestSubjectB,1stSimilarToB,2ndSimilarToB,3rdSimilarToB,...,lastSimilarToB
+TestSubjectC,1stSimilarToC,2ndSimilarToC,3rdSimilarToC,...,lastSimilarToC
 ...
 ```
 
