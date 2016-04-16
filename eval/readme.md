@@ -35,3 +35,14 @@ hanqing,hanqing,han68,qing5,chen89
 letang,letang,le2016,tang33,boon22
 chiahao,chiahao,chia100,hao42,hsieh20
 ```
+
+# How to generate ground truth
+
+```
+python generate_groundtruth.py <input data file> <actor.csv for testing> <actor.csv for training>
+```
+
+For example,
+```
+python generate_groundtruth.py '../train_top_author.txt' '../pathsim/test_data/actor.csv' '../pathsim/train_data/actor.csv'
+```

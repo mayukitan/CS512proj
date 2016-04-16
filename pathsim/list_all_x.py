@@ -22,9 +22,6 @@ parser.add_argument("datafile")
 parser.add_argument("savedir")
 args = parser.parse_args()
 
-print(args.datafile)
-print(args.savedir)
-
 data = read_data(args.datafile)
 # print('data:', data)
 
