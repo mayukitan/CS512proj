@@ -37,12 +37,25 @@ def set_relation(matrixRX, type_x, datafile):
             matrixRX.loc[cur_repo][cur_x] += 1
 
 
-def create_matrices(actor, lang, repo, datafile):
-    matrixRA = create_matrixRX(repo, actor)
-    matrixRL = create_matrixRX(repo, lang)
+def create_matrices(actor, lang, repo, datafile, savedir):
+    try:
+        # load matrix from csv
+        matrixRA = pandas.DataFrame.from_csv(
+            savedir + '/' + 'matrixRA.csv')
+        matrixRL = pandas.DataFrame.from_csv(
+            savedir + '/' + 'matrixRL.csv')
 
-    set_relation(matrixRA, constants.ACTOR, datafile)
-    set_relation(matrixRL, constants.LANG, datafile)
+    except IOError:
+        matrixRA = create_matrixRX(repo, actor)
+        matrixRL = create_matrixRX(repo, lang)
+
+        set_relation(matrixRA, constants.ACTOR, datafile)
+        set_relation(matrixRL, constants.LANG, datafile)
+
+        # save matrix to csv
+        matrixRA.to_csv(savedir + '/' + 'matrixRA.csv')
+        matrixRL.to_csv(savedir + '/' + 'matrixRL.csv')
+
     return matrixRA, matrixRL
 
 
@@ -90,30 +103,40 @@ def top_k_similar(actor_name, k, matrix):
     return similar[0:k]
 
 
+def get_test_result(matrixAXA, test_actors):
+    temp_results = []
+
+    for test_actor, _ in test_actors.iterrows():
+        top_k = top_k_similar(test_actor, 10, matrixAXA)
+        temp_results.append(top_k.index.tolist())
+
+    resultAXA = pandas.DataFrame(temp_results)
+    resultAXA = resultAXA.set_index(test_actors.index.values)
+    return resultAXA
+
+# parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("datafile")
-parser.add_argument("savedir")
+parser.add_argument("traindir")
+parser.add_argument("testdir")
 args = parser.parse_args()
 
-print(args.datafile)
-print(args.savedir)
+# read in output files of list_all_x.py
+langs = read_x(constants.LANG, args.traindir)
+actors = read_x(constants.ACTOR, args.traindir)
+repos = read_x(constants.REPO, args.traindir)
 
-lang = read_x(constants.LANG, args.savedir)
-actor = read_x(constants.ACTOR, args.savedir)
-repo = read_x(constants.REPO, args.savedir)
+test_actors = read_x(constants.ACTOR, args.testdir)
 
-matrixRA, matrixRL = create_matrices(actor, lang, repo, args.datafile)
-# print('matrixRA:', matrixRA)
-# print('matrixRL:', matrixRL)
+matrixRA, matrixRL = create_matrices(
+    actors, langs, repos, args.datafile, args.traindir)
 
-matrixARA = create_matrixARA(matrixRA, args.savedir)
+# compute result using meta-path ARA
+matrixARA = create_matrixARA(matrixRA, args.traindir)
+resultARA = get_test_result(matrixARA, test_actors)
+resultARA.to_csv('pathsimARA.csv', header=False)
 
-print('\nThe top similar actors to pombredanne using ARA are:\n')
-result = top_k_similar('pombredanne', 10, matrixARA)
-print('result:', result)
-
-matrixARLRA = create_matrixARLRA(matrixRL, matrixRA, args.savedir)
-
-print('\nThe top similar actors to pombredanne using ARLRA are:\n')
-result = top_k_similar('pombredanne', 10, matrixARLRA)
-print('result:', result)
+# compute result using meta-path ARLRA
+matrixARLRA = create_matrixARLRA(matrixRL, matrixRA, args.traindir)
+resultARLRA = get_test_result(matrixARLRA, test_actors)
+resultARLRA.to_csv('pathsimARLRA.csv', header=False)
